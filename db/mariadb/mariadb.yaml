@@ -32,45 +32,17 @@ spec:
         -  name: "MYSQL_USER"
            value: "demo"
         -  name: "MYSQL_PASSWORD"
-           value: "password"
+           value: "password!"
         -  name: "MYSQL_DATABASE"
            value: "demodb" 
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: db-adminer
-spec:
-  selector:
-    app: db-adminer
-  ports:
-  - port: 8080
-    targetPort: 8080
-  type: NodePort
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: db-adminer
-spec:
-  selector:
-    matchLabels:
-      app: db-adminer
-  template:
-    metadata:
-      labels:
-        app: db-adminer
-    spec:
-      containers:
-      - name: db-adminer
-        image: adminer
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 8080
+        volumeMounts:
+          - name: mysqldata
+            mountPath: /var/lib/mysql
+      volumes:
+        - name: mysqldata
+          persistentVolumeClaim:
+            claimName: mysql-data
